@@ -1,0 +1,41 @@
+{
+  "name": "columbia-county-annexation-documents",
+  "version": "1.0.0",
+  "description": "A tool for downloading Columbia County annexation documents and converting to PDF.",
+  "main": "index.js",
+  "scripts": {
+    "prettier": "prettier --write \"index.js\"",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CityOfVernonia/columbia-county-annexation-documents.git"
+  },
+  "author": "COV-GIS",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/CityOfVernonia/columbia-county-annexation-documents/issues"
+  },
+  "homepage": "https://github.com/CityOfVernonia/columbia-county-annexation-documents#readme",
+  "devDependencies": {
+    "@esri/arcgis-rest-auth": "^3.4.3",
+    "@esri/arcgis-rest-feature-layer": "^3.4.3",
+    "@esri/arcgis-rest-request": "^3.4.3",
+    "ansi-regex": ">=6.0.1",
+    "chalk": "^4.1.2",
+    "download": "^8.0.0",
+    "fs-extra": "^10.0.0",
+    "isomorphic-form-data": "^2.0.0",
+    "node-fetch": "^2.6.6"
+  },
+  "dependencies": {
+    "prettier": "^2.5.0"
+  },
+  "prettier": {
+    "semi": true,
+    "singleQuote": true,
+    "trailingComma": "all",
+    "printWidth": 120,
+    "tabWidth": 2
+  }
+}

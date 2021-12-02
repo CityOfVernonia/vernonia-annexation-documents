@@ -114,6 +114,50 @@ const fileCheck = (feature) => {
 };
 
 /**
+ * Create HTML index for deploys.
+ * @param {*} features
+ */
+const htmlFileWrite = (features) => {
+  const links = [];
+
+  features.forEach((feature) => {
+    const {
+      properties: { IMAGE: fileName },
+    } = feature;
+
+    const parts = fileName.split('.');
+
+    const pdfFileName = `${parts[0]}.pdf`;
+
+    const link = `
+      <h3>
+        <a href="${directory}${pdfFileName}" target="_blank">${pdfFileName}</a>
+      </h3>
+    `;
+
+    if (links.indexOf(link) === -1) links.push(link);
+  });
+
+  const html = `
+    <html>
+      <head>
+        <title>Vernonia Annexation Documents</title>
+      </head>
+      <body style="padding: 2rem; font-family: sans-serif;">
+      <h3>
+        <a href="vernonia-annexations.geojson" target="_blank">vernonia-annexations.geojson</a>
+      </h3>
+        ${links.join('')}
+      </body>
+    </html>
+  `;
+
+  fs.writeFile('index.html', html).catch((error) => {
+    console.log(chalk.red(`HTML write failed.`, error));
+  });
+};
+
+/**
  * Query features.
  */
 queryFeatures({
@@ -133,6 +177,8 @@ queryFeatures({
     fs.writeFile('vernonia-annexations.geojson', JSON.stringify(results)).catch((error) => {
       console.log(chalk.red(`GeoJSON write failed.`, error));
     });
+
+    htmlFileWrite(results.features);
 
     results.features.forEach(fileCheck);
   })

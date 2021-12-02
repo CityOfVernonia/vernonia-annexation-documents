@@ -1,18 +1,39 @@
-const fetch = require('node-fetch');
+// polyfill
 require('isomorphic-form-data');
+
+// system
 const fs = require('fs-extra');
 const { exec } = require('child_process');
+
+// utilities
 const download = require('download');
 const chalk = require('chalk');
+
+// arcgis rest
 const { setDefaultRequestOptions } = require('@esri/arcgis-rest-request');
 const { queryFeatures } = require('@esri/arcgis-rest-feature-layer');
+setDefaultRequestOptions({ fetch: require('node-fetch') });
 
-setDefaultRequestOptions({ fetch });
-
+// variables
 const serviceUrl =
   'https://gis.columbiacountymaps.com/server/rest/services/Land_Development/Land_Use_Planning/FeatureServer/3';
 
 const downloadUrl = 'https://gis.columbiacountymaps.com/annex_images/';
+
+const directory = 'docs/';
+
+const vernoniaSpatialExtent = {
+  rings: [
+    [
+      [606952.056605339, 1490512.4505739063],
+      [606952.056605339, 1529343.4065166563],
+      [650728.9227023721, 1529343.4065166563],
+      [650728.9227023721, 1490512.4505739063],
+      [606952.056605339, 1490512.4505739063],
+    ],
+  ],
+  spatialReference: { wkid: 102970, latestWkid: 6557 },
+};
 
 /**
  * Convert tiff to pdf.
@@ -27,9 +48,11 @@ const tiff2pdf = (fileName) => {
     return;
   }
 
-  exec(`tiff2pdf -z -o ${parts[0]}.pdf ${fileName}`, (error) => {
-    if (!error) {
-      fs.remove(fileName);
+  exec(`tiff2pdf -z -o ${directory}${parts[0]}.pdf ${directory}${fileName}`, (error) => {
+    if (error) {
+      console.log(chalk.red(`${fileName} conversion failed.`, error));
+    } else {
+      fs.remove(`${directory}${fileName}`);
     }
   });
 };
@@ -40,10 +63,10 @@ const tiff2pdf = (fileName) => {
  * @param {*} data
  */
 const fileWrite = (fileName, data) => {
-  fs.writeFile(fileName, data)
-    .then(async () => {
+  fs.writeFile(`${directory}${fileName}`, data)
+    .then(() => {
       console.log(chalk.yellow(`${fileName} written.`));
-      await tiff2pdf(fileName);
+      tiff2pdf(fileName);
     })
     .catch((error) => {
       console.log(chalk.red(`${fileName} write failed.`, error));
@@ -71,23 +94,16 @@ const fileDownload = (fileName) => {
  */
 const fileCheck = (feature) => {
   const {
-    attributes: { IMAGE: fileName },
+    properties: { IMAGE: fileName },
   } = feature;
 
   const parts = fileName.split('.');
 
   const pdfFileName = `${parts[0]}.pdf`;
 
-  if (parts.length >= 3) return;
-
-  // very large and corrupt file.
-  if (fileName === '2017-02.tif') return;
-
-  fs.pathExists(pdfFileName)
+  fs.pathExists(`${directory}${pdfFileName}`)
     .then((exists) => {
-      if (exists) {
-        console.log(chalk.green(`${pdfFileName} exists.`));
-      } else {
+      if (!exists) {
         console.log(chalk.yellow(`Downloading ${fileName} from ${downloadUrl}${fileName}.`));
         fileDownload(fileName);
       }
@@ -102,15 +118,25 @@ const fileCheck = (feature) => {
  */
 queryFeatures({
   url: serviceUrl,
-  where: '1 = 1',
-  outFields: ['IMAGE'],
-  returnGeometry: false,
+  geometry: vernoniaSpatialExtent,
+  spatialRel: 'esriSpatialRelIntersects',
+  geometryType: 'esriGeometryPolygon',
+  outFields: ['*'],
+  orderByFields: ['IMAGE ASC'],
+  returnGeometry: true,
+  outSR: '4326',
+  f: 'geojson',
 })
   .then((results) => {
     console.log(chalk.yellow(`${results.features.length} results`));
+
+    fs.writeFile('vernonia-annexations.geojson', JSON.stringify(results)).catch((error) => {
+      console.log(chalk.red(`GeoJSON write failed.`, error));
+    });
+
     results.features.forEach(fileCheck);
   })
   .catch((error) => {
-    console.log(error);
+    console.log('Query features failed.', error);
     // console.log(error.response);
   });

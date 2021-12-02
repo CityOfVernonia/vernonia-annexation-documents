@@ -1,7 +1,7 @@
 {
-  "name": "columbia-county-annexation-documents",
+  "name": "vernonia-annexation-documents",
   "version": "1.0.0",
-  "description": "A tool for downloading Columbia County annexation documents and converting to PDF.",
+  "description": "A tool for downloading Vernonia annexation documents and converting to PDF.",
   "main": "index.js",
   "scripts": {
     "prettier": "prettier --write \"index.js\"",
@@ -9,14 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/CityOfVernonia/columbia-county-annexation-documents.git"
+    "url": "git+https://github.com/CityOfVernonia/vernonia-annexation-documents.git"
   },
   "author": "COV-GIS",
   "license": "UNLICENSED",
   "bugs": {
-    "url": "https://github.com/CityOfVernonia/columbia-county-annexation-documents/issues"
+    "url": "https://github.com/CityOfVernonia/vernonia-annexation-documents/issues"
   },
-  "homepage": "https://github.com/CityOfVernonia/columbia-county-annexation-documents#readme",
+  "homepage": "https://github.com/CityOfVernonia/vernonia-annexation-documents#readme",
   "devDependencies": {
     "@esri/arcgis-rest-auth": "^3.4.3",
     "@esri/arcgis-rest-feature-layer": "^3.4.3",

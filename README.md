@@ -1,8 +1,8 @@
-# columbia-county-annexation-documents
+# vernonia-annexation-documents
 
-A tool for downloading Columbia County annexation documents and converting to PDF.
+A tool for downloading Vernonia annexation documents and converting to PDF.
 
-Updated 2021.12.01 with 336 results containing one download error.
+Updated 2021.12.02.
 
 ### requirements
 
